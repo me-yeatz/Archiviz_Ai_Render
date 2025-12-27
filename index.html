@@ -1,62 +1,808 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
-
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCHIVIZ® Render Studio - Where Sketches Become Reality</title>
+    <meta name="description" content="Transform architectural sketches into photorealistic renders using AI. Professional visualization tool for architects and designers.">
 
-  <title>ARCHIVIZ® Render Studio | AI Architectural Visualization</title>
-  <meta name="description" content="Transform architectural sketches into photorealistic renders using AI. Where sketches become reality. By yeatz.">
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#FCD5D3">
 
-  <!-- PWA Meta Tags -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#FCD5D3">
+    <!-- iOS PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ARCHIVIZ">
 
-  <!-- iOS PWA Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ARCHIVIZ">
-  <meta name="mobile-web-app-capable" content="yes">
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="512x512" href="/Logo_Icon.png">
+    <link rel="icon" type="image/png" href="/Logo_Icon.png">
 
-  <!-- Icons -->
-  <link rel="apple-touch-icon" sizes="512x512" href="/Logo_Icon.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/Logo_Icon.png">
-  <link rel="icon" type="image/png" href="/Logo_Icon.png">
+    <!-- Open Graph -->
+    <meta property="og:title" content="ARCHIVIZ® Render Studio - Where Sketches Become Reality">
+    <meta property="og:description" content="Transform architectural sketches into photorealistic renders using AI.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/Screenshot-Desktop.png">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="ARCHIVIZ® Render Studio | AI Architectural Visualization">
-  <meta property="og:description" content="Transform architectural sketches into photorealistic renders using AI. Where sketches become reality.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="/Screenshot-Desktop.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ARCHIVIZ® Render Studio">
-  <meta name="twitter:description" content="Transform architectural sketches into photorealistic renders using AI.">
-  <meta name="twitter:image" content="/Screenshot-Desktop.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
-    rel="stylesheet">
+        :root {
+            --coral: #FCD5D3;
+            --gold: #F6D883;
+            --black: #191919;
+            --dark: #111111;
+            --gray: #333333;
+            --light-gray: #666666;
+            --white: #F3F3EE;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--black);
+            border-bottom: 1px solid var(--gray);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--coral);
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-title sup {
+            font-size: 10px;
+            margin-left: 2px;
+        }
+
+        .nav-credit {
+            font-size: 9px;
+            font-style: italic;
+            color: var(--light-gray);
+            margin-top: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--light-gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+        }
+
+        .nav-cta {
+            background: var(--gold);
+            color: var(--black);
+            padding: 12px 24px;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--coral);
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 var(--gold);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 32px 80px;
+            background: var(--black);
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--dark);
+            border: 1px solid var(--gray);
+            color: var(--gold);
+            padding: 10px 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 32px;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 900;
+            line-height: 1.05;
+            text-transform: uppercase;
+            letter-spacing: -3px;
+            color: var(--white);
+            max-width: 900px;
+            margin-bottom: 24px;
+        }
+
+        .hero-title span {
+            color: var(--coral);
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--light-gray);
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 18px 36px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary:hover {
+            background: var(--coral);
+            transform: translate(-3px, -3px);
+            box-shadow: 6px 6px 0 var(--gold);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border: 1px solid var(--gray);
+            padding: 18px 36px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--white);
+            transform: translate(-3px, -3px);
+            box-shadow: 6px 6px 0 var(--gray);
+        }
+
+        .hero-image {
+            margin-top: 60px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .hero-screenshot {
+            width: 100%;
+            border: 1px solid var(--gray);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 120px 32px;
+            background: var(--dark);
+            border-top: 1px solid var(--gray);
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: var(--black);
+            border: 1px solid var(--gray);
+            color: var(--gold);
+            padding: 8px 16px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            color: var(--white);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--black);
+            border: 1px solid var(--gray);
+            padding: 40px 32px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--coral);
+            transform: translate(-4px, -4px);
+            box-shadow: 8px 8px 0 var(--gray);
+        }
+
+        .feature-number {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--coral);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            color: var(--white);
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--light-gray);
+            line-height: 1.6;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 120px 32px;
+            background: var(--black);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 32px 24px;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--gold);
+            color: var(--black);
+            font-size: 24px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: var(--white);
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: var(--light-gray);
+            line-height: 1.5;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            padding: 100px 32px;
+            background: var(--dark);
+            border-top: 1px solid var(--gray);
+        }
+
+        .tech-grid {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            margin-top: 48px;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .tech-name {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-gray);
+        }
+
+        .tech-version {
+            font-size: 10px;
+            color: var(--gold);
+            margin-top: 4px;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 120px 32px;
+            background: var(--coral);
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 42px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            color: var(--black);
+            margin-bottom: 16px;
+        }
+
+        .cta-subtitle {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--black);
+            margin-bottom: 40px;
+            opacity: 0.8;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta .btn-primary {
+            background: var(--black);
+            color: var(--coral);
+        }
+
+        .cta .btn-primary:hover {
+            background: var(--dark);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--black);
+            padding: 32px;
+            text-align: center;
+            border-top: 1px solid var(--gray);
+        }
+
+        .footer-text {
+            color: var(--light-gray);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-text span {
+            color: var(--white);
+        }
+
+        .footer-text a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            color: var(--coral);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--gray);
+            cursor: pointer;
+            padding: 8px 12px;
+        }
+
+        .mobile-menu-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--white);
+            fill: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 12px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links.mobile-open {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--black);
+                padding: 24px;
+                border-bottom: 1px solid var(--gray);
+                gap: 16px;
+            }
+
+            .hero {
+                padding: 100px 20px 60px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+                letter-spacing: -1px;
+            }
+
+            .hero-subtitle {
+                font-size: 15px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-primary, .btn-secondary {
+                text-align: center;
+                width: 100%;
+            }
+
+            .features {
+                padding: 80px 20px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .how-it-works {
+                padding: 80px 20px;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .tech-stack {
+                padding: 60px 20px;
+            }
+
+            .cta {
+                padding: 80px 20px;
+            }
+
+            .cta-title {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .hero-badge {
+                font-size: 9px;
+                padding: 8px 12px;
+            }
+        }
+    </style>
 </head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-brand">
+            <img class="nav-logo" src="/Logo_Icon.png" alt="ARCHIVIZ Logo">
+            <div>
+                <div class="nav-title">ARCHIVIZ<sup>®</sup></div>
+                <div class="nav-credit">by: yeatz</div>
+            </div>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#how-it-works" class="nav-link">How It Works</a>
+            <a href="#tech" class="nav-link">Tech</a>
+            <a href="https://github.com/me-yeatz/Archiviz_Ai_Render" target="_blank" class="nav-link">GitHub</a>
+            <a href="/app" class="nav-cta">Launch App</a>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+                <path d="M3 6h18M3 12h18M3 18h18"/>
+            </svg>
+        </button>
+    </nav>
 
-<body class="h-full">
-  <div id="root" class="h-full"></div>
-  <script type="module" src="/index.tsx"></script>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-badge">
+                AI-Powered Visualization Tool
+            </div>
+            <h1 class="hero-title">Where <span>Sketches</span> Become Reality</h1>
+            <p class="hero-subtitle">Transform architectural sketches and 3D models into photorealistic renders using AI. Professional visualization for architects, designers, and dreamers.</p>
+            <div class="hero-buttons">
+                <a href="/app" class="btn-primary">Launch App</a>
+                <a href="https://github.com/me-yeatz/Archiviz_Ai_Render" target="_blank" class="btn-secondary">View Source</a>
+            </div>
+            <div class="hero-image">
+                <img src="/Screenshot-Desktop.png" alt="ARCHIVIZ Render Studio" class="hero-screenshot">
+            </div>
+        </div>
+    </section>
 
-  <!-- Register Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('SW registered:', registration);
-          })
-          .catch((error) => {
-            console.log('SW registration failed:', error);
-          });
-      });
-    }
-  </script>
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-badge">Features</span>
+                <h2 class="section-title">Built for Architects</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-number">01 / AI Rendering</div>
+                    <h3 class="feature-title">Sketch to Render</h3>
+                    <p class="feature-desc">Upload any architectural sketch or SketchUp model and transform it into a photorealistic visualization in seconds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">02 / Presets</div>
+                    <h3 class="feature-title">Environment Presets</h3>
+                    <p class="feature-desc">Choose from 6 professional lighting presets - Golden Hour, Overcast, Night, Urban, Forest, and Minimal.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">03 / Control</div>
+                    <h3 class="feature-title">Fine-Tune Results</h3>
+                    <p class="feature-desc">Adjust creativity strength, add negative prompts, and control seeds for reproducible results.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">04 / Compare</div>
+                    <h3 class="feature-title">Before & After</h3>
+                    <p class="feature-desc">Interactive comparison slider lets you see the transformation from sketch to render side-by-side.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">05 / PWA</div>
+                    <h3 class="feature-title">Install Anywhere</h3>
+                    <p class="feature-desc">Progressive Web App works on desktop, tablet, and mobile. Install it like a native app.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">06 / Flexible</div>
+                    <h3 class="feature-title">Multiple AI Providers</h3>
+                    <p class="feature-desc">Supports Hugging Face, Ollama, and LM Studio. Use cloud or run 100% locally.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-badge">Process</span>
+                <h2 class="section-title">How It Works</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Upload</h3>
+                    <p class="step-desc">Drag & drop your architectural sketch or 3D model export</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Configure</h3>
+                    <p class="step-desc">Select environment preset and adjust render settings</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Generate</h3>
+                    <p class="step-desc">AI processes your sketch and creates photorealistic render</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Download</h3>
+                    <p class="step-desc">Compare results and download high-quality output</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack" id="tech">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-badge">Technology</span>
+                <h2 class="section-title">Built With</h2>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-name">React</div>
+                    <div class="tech-version">v19</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">TypeScript</div>
+                    <div class="tech-version">v5.8</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Tailwind CSS</div>
+                    <div class="tech-version">v4.1</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Vite</div>
+                    <div class="tech-version">v6.2</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Hugging Face</div>
+                    <div class="tech-version">API</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="section-container">
+            <h2 class="cta-title">Ready to Transform?</h2>
+            <p class="cta-subtitle">Start visualizing your architectural designs with AI. No sign-up required.</p>
+            <a href="/app" class="btn-primary">Open ARCHIVIZ Studio</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            <span>Where Sketches Become Reality</span> |
+            <a href="https://github.com/me-yeatz" target="_blank">by yeatz 2025</a>
+        </p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('mobile-open');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('mobile-open');
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
-
 </html>

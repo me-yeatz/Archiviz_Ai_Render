@@ -14,6 +14,14 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
     },
     plugins: [react()],
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          app: path.resolve(__dirname, 'app.html'),
+        },
+      },
+    },
     define: {
       // Local AI environment variables
       'process.env.AI_PROVIDER': JSON.stringify(env.AI_PROVIDER),
