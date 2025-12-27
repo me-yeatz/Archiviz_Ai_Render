@@ -1,0 +1,54 @@
+{
+  "name": "ARCHIVIZ® Render Studio - AI Architectural Visualization",
+  "short_name": "ARCHIVIZ",
+  "description": "Transform architectural sketches into photorealistic renders using AI. Where sketches become reality.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#191919",
+  "theme_color": "#FCD5D3",
+  "orientation": "any",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/Logo_Icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "design", "graphics"],
+  "screenshots": [
+    {
+      "src": "/Screenshot-Desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ARCHIVIZ Render Studio Desktop View"
+    },
+    {
+      "src": "/screenshot-Mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ARCHIVIZ Render Studio Mobile View"
+    }
+  ]
+}

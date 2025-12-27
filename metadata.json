@@ -1,0 +1,5 @@
+{
+  "name": "ArchiViz AI Render",
+  "description": "Transform SketchUp models and architectural sketches into photorealistic renders with customizable environments using Gemini 2.5.",
+  "requestFramePermissions": []
+}
