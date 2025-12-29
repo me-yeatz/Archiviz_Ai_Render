@@ -1,3 +1,5 @@
+export type RenderCategory = 'exterior' | 'interior';
+
 export interface EnvironmentPreset {
   id: string;
   name: string;
@@ -6,6 +8,7 @@ export interface EnvironmentPreset {
   iconStr: string; // Using string representation for icons to keep types simple
   colorFrom: string;
   colorTo: string;
+  category: RenderCategory;
 }
 
 export interface RenderState {

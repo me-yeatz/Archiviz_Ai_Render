@@ -46,15 +46,15 @@ const getAIConfig = (): AIConfig => {
   const defaults = {
     ollama: {
       baseUrl: import.meta.env.VITE_OLLAMA_BASE_URL || 'http://localhost:11434',
-      model: import.meta.env.VITE_OLLAMA_MODEL || 'llava:13b',
+      model: import.meta.env.VITE_OLLAMA_MODEL || 'llava:7b',
     },
     lmstudio: {
       baseUrl: import.meta.env.VITE_LMSTUDIO_BASE_URL || 'http://localhost:1234',
       model: import.meta.env.VITE_LMSTUDIO_MODEL || 'llava-v1.6-34b',
     },
     huggingface: {
-      baseUrl: import.meta.env.VITE_HF_BASE_URL || 'https://api-inference.huggingface.co/models',
-      model: import.meta.env.VITE_HF_MODEL || 'stabilityai/stable-diffusion-xl-base-1.0',
+      baseUrl: import.meta.env.VITE_HF_BASE_URL || 'https://router.huggingface.co/hf-inference/models',
+      model: import.meta.env.VITE_HF_MODEL || 'black-forest-labs/FLUX.1-schnell',
       apiKey: import.meta.env.VITE_HF_API_KEY,
     }
   };
@@ -346,7 +346,7 @@ export const checkAIHealth = async (): Promise<{ available: boolean; provider: s
           provider: 'Ollama',
           message: hasVisionModel
             ? `Connected to Ollama (${data.models?.length || 0} models available)`
-            : 'Ollama running but no vision models found. Install llava:13b or similar.'
+            : 'Ollama running but no vision models found. Install llava:7b or similar.'
         };
       }
     } else if (config.provider === 'lmstudio') {
