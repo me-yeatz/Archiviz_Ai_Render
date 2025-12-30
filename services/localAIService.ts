@@ -61,7 +61,7 @@ const getAIConfig = (): AIConfig => {
     },
     gemini: {
       baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
-      model: 'gemini-1.5-pro',
+      model: 'gemini-1.5-flash',
       apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
     }
   };

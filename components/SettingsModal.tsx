@@ -30,7 +30,7 @@ const defaultSettings: Record<string, Partial<AISettings>> = {
   },
   gemini: {
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
-    model: 'gemini-1.5-pro',
+    model: 'gemini-1.5-flash',
   },
 };
 
@@ -181,7 +181,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
               {localSettings.provider === 'huggingface' &&
                 'Create an account at huggingface.co and generate an API token with inference permissions.'}
               {localSettings.provider === 'gemini' &&
-                'Get your API Key from Google AI Studio. Ensure you have access to Gemini 1.5 Pro.'}
+                'Get your API Key from Google AI Studio. Ensure you have access to Gemini 1.5 Flash.'}
             </p>
           </div>
         </div>
