@@ -14,13 +14,13 @@ const getMimeType = (base64Data: string) => {
 };
 
 // Configuration types
-type AIProvider = 'ollama' | 'lmstudio' | 'huggingface';
+type AIProvider = 'ollama' | 'lmstudio' | 'huggingface' | 'gemini';
 
 interface AIConfig {
   provider: AIProvider;
   baseUrl: string;
   model: string;
-  apiKey?: string; // Only needed for Hugging Face
+  apiKey?: string; // Only needed for Hugging Face or Gemini
 }
 
 /**
@@ -31,8 +31,10 @@ const getAIConfig = (): AIConfig => {
   const savedSettings = localStorage.getItem('archiviz-ai-settings');
   if (savedSettings) {
     const parsed = JSON.parse(savedSettings);
+    // Ensure provider is valid
+    const provider = parsed.provider as AIProvider;
     return {
-      provider: parsed.provider as AIProvider,
+      provider: provider,
       baseUrl: parsed.baseUrl,
       model: parsed.model,
       apiKey: parsed.apiKey || undefined,
@@ -56,13 +58,18 @@ const getAIConfig = (): AIConfig => {
       baseUrl: import.meta.env.VITE_HF_BASE_URL || 'https://router.huggingface.co/hf-inference/models',
       model: import.meta.env.VITE_HF_MODEL || 'black-forest-labs/FLUX.1-schnell',
       apiKey: import.meta.env.VITE_HF_API_KEY,
+    },
+    gemini: {
+      baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
+      model: 'gemini-1.5-pro',
+      apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
     }
   };
 
-  const config = defaults[provider];
+  const config = defaults[provider] || defaults.gemini;
 
   if (!config) {
-    throw new Error(`Unsupported AI provider: ${provider}. Use 'ollama', 'lmstudio', or 'huggingface'.`);
+    throw new Error(`Unsupported AI provider: ${provider}. Use 'ollama', 'lmstudio', 'huggingface', or 'gemini'.`);
   }
 
   return {
@@ -105,11 +112,6 @@ const generateWithOllama = async (
   const data = await response.json();
 
   // Ollama vision models return text descriptions, not images
-  // For actual image generation, we'd need to use a different approach
-  // This is a placeholder - in reality, you'd need to:
-  // 1. Use Ollama to analyze the image
-  // 2. Use Stable Diffusion or similar for generation
-
   throw new Error('Ollama currently supports vision analysis but not image generation. Please use LM Studio with image generation models or Hugging Face.');
 };
 
@@ -162,9 +164,112 @@ const generateWithLMStudio = async (
     throw new Error('No response from LM Studio');
   }
 
-  // Note: LM Studio with vision models analyzes images but doesn't generate new ones
-  // For actual rendering, you'd need to integrate with Stable Diffusion or similar
   throw new Error('LM Studio vision models can analyze images but not generate new renders. Consider using Hugging Face with Stable Diffusion models.');
+};
+
+/**
+ * Generate render using Gemini API
+ */
+const generateWithGemini = async (
+  base64Image: string,
+  prompt: string,
+  config: AIConfig,
+  settings: RenderSettings
+): Promise<string> => {
+  if (!config.apiKey) {
+    throw new Error('Gemini API key is required. Go to Settings and add your Google API key.');
+  }
+
+  const cleanData = cleanBase64(base64Image);
+  const mimeType = getMimeType(base64Image);
+
+  // 1. The "Architectural Core" System Prompt
+  const systemInstruction = `
+System Role: You are a Professional Architectural Visualizer and Building Consultant.
+
+Objective: Your task is to perform "Image-to-Image" rendering. You must take the user's uploaded 3D wireframe or basic massing model and transform it into a photorealistic architectural render.
+
+Constraints:
+
+Geometry Lock: Do not move columns, walls, or rooflines. Maintain the exact perspective of the input image.
+
+Material Accuracy: Apply high-quality textures (e.g., Fair-faced concrete, Low-E glass, Timber cladding) based on the Malaysian tropical climate.
+
+Lighting: Use Global Illumination. Default to "Golden Hour" lighting unless specified otherwise.
+
+Safety: If the user's design shows structural instability (like the tilted column from my past experience), subtly highlight it or ensure the render shows the corrected, safe version.
+    `.trim();
+
+  // Clean URL
+  const baseUrl = config.baseUrl.endsWith('/') ? config.baseUrl.slice(0, -1) : config.baseUrl;
+  const url = `${baseUrl}/${config.model}:generateContent?key=${config.apiKey}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: systemInstruction }]
+      },
+      contents: [{
+        role: "user",
+        parts: [
+          { text: prompt },
+          {
+            inline_data: {
+              mime_type: mimeType,
+              data: cleanData
+            }
+          }
+        ]
+      }],
+      // 2. The API Configuration
+      generationConfig: {
+        temperature: 1.0,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 8192,
+        responseModalities: ["IMAGE"],
+      },
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    let errorMsg = errorText;
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorMsg = errorJson.error?.message || errorText;
+    } catch { }
+    throw new Error(`Gemini API Error: ${errorMsg}`);
+  }
+
+  const data = await response.json();
+
+  // Check for candidates
+  if (!data.candidates || data.candidates.length === 0) {
+    throw new Error("Gemini returned no candidates.");
+  }
+
+  // Logic to extract image from response
+  const parts = data.candidates[0].content?.parts;
+  if (!parts) {
+    throw new Error("Gemini returned no content parts.");
+  }
+
+  const imagePart = parts.find((p: any) => p.inline_data || p.inlineData);
+
+  if (imagePart) {
+    const imgData = imagePart.inline_data || imagePart.inlineData;
+    return `data:${imgData.mime_type};base64,${imgData.data}`;
+  }
+
+  const textPart = parts.find((p: any) => p.text);
+  if (textPart) {
+    throw new Error(`Gemini generated text instead of an image. Ensure you are using a model that supports image generation (like Imagen 3 on Gemini). Response: ${textPart.text.substring(0, 100)}...`);
+  }
+
+  throw new Error("Gemini response did not contain an image.");
 };
 
 /**
@@ -181,9 +286,6 @@ const generateWithHuggingFace = async (
   }
 
   const cleanData = cleanBase64(base64Image);
-
-  // For text-to-image models (like SDXL), we send JSON with prompt
-  // For image-to-image, we need to use a different approach
   const isImg2Img = config.model.includes('img2img') || config.model.includes('instruct-pix2pix');
 
   try {
@@ -218,7 +320,7 @@ const generateWithHuggingFace = async (
         })
       });
     } else {
-      // Text-to-image model (use prompt enhanced with image description)
+      // Text-to-image model
       response = await fetch(`${config.baseUrl}/${config.model}`, {
         method: 'POST',
         headers: {
@@ -243,7 +345,7 @@ const generateWithHuggingFace = async (
       try {
         const errorJson = JSON.parse(errorText);
         errorMsg = errorJson.error || errorJson.message || errorText;
-      } catch {}
+      } catch { }
 
       if (response.status === 401) {
         throw new Error('Invalid API key. Please check your Hugging Face API key in Settings.');
@@ -255,10 +357,8 @@ const generateWithHuggingFace = async (
       throw new Error(`Hugging Face Error: ${errorMsg}`);
     }
 
-    // Hugging Face returns image as blob
     const imageBlob = await response.blob();
 
-    // Convert blob back to base64
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -318,6 +418,9 @@ Technical Requirements:
       case 'huggingface':
         return await generateWithHuggingFace(base64Image, prompt, config, settings);
 
+      case 'gemini':
+        return await generateWithGemini(base64Image, prompt, config, settings);
+
       default:
         throw new Error(`Unsupported provider: ${config.provider}`);
     }
@@ -370,6 +473,20 @@ export const checkAIHealth = async (): Promise<{ available: boolean; provider: s
           available: false,
           provider: 'Hugging Face',
           message: 'Hugging Face API key not configured'
+        };
+      }
+    } else if (config.provider === 'gemini') {
+      if (config.apiKey) {
+        return {
+          available: true,
+          provider: 'Gemini',
+          message: 'Gemini API configured'
+        };
+      } else {
+        return {
+          available: false,
+          provider: 'Gemini',
+          message: 'Gemini API key not configured'
         };
       }
     }

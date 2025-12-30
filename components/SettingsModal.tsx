@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Settings, Key, Server, Cpu } from 'lucide-react';
 
 export interface AISettings {
-  provider: 'ollama' | 'lmstudio' | 'huggingface';
+  provider: 'ollama' | 'lmstudio' | 'huggingface' | 'gemini';
   baseUrl: string;
   model: string;
   apiKey: string;
@@ -27,6 +27,10 @@ const defaultSettings: Record<string, Partial<AISettings>> = {
   huggingface: {
     baseUrl: 'https://api-inference.huggingface.co/models',
     model: 'stabilityai/stable-diffusion-xl-base-1.0',
+  },
+  gemini: {
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
+    model: 'gemini-1.5-pro',
   },
 };
 
@@ -86,8 +90,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
             <label className="block text-[10px] font-bold uppercase tracking-widest text-[#666] mb-3">
               AI Provider
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['ollama', 'lmstudio', 'huggingface'] as const).map((provider) => (
+            <div className="grid grid-cols-4 gap-2">
+              {(['ollama', 'lmstudio', 'huggingface', 'gemini'] as const).map((provider) => (
                 <button
                   key={provider}
                   onClick={() => handleProviderChange(provider)}
@@ -141,13 +145,17 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
           <div>
             <label className="block text-[10px] font-bold uppercase tracking-widest text-[#666] mb-2">
               <Key className="w-3 h-3 inline mr-2" />
-              API Key {localSettings.provider !== 'huggingface' && <span className="text-[#444]">(Optional)</span>}
+              API Key {localSettings.provider !== 'huggingface' && localSettings.provider !== 'gemini' && <span className="text-[#444]">(Optional)</span>}
             </label>
             <input
               type="password"
               value={localSettings.apiKey}
               onChange={(e) => setLocalSettings({ ...localSettings, apiKey: e.target.value })}
-              placeholder={localSettings.provider === 'huggingface' ? 'hf_xxxxxxxxxxxxx' : 'Not required for local AI'}
+              placeholder={
+                localSettings.provider === 'huggingface' ? 'hf_xxxxxxxxxxxxx' :
+                  localSettings.provider === 'gemini' ? 'AIzaSy...' :
+                    'Not required for local AI'
+              }
               className="w-full bg-[#111] border border-[#333] px-4 py-3 text-sm text-[#F3F3EE] placeholder-[#444] focus:border-[#FCD5D3] focus:outline-none transition-colors"
             />
             {localSettings.provider === 'huggingface' && (
@@ -162,6 +170,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#F6D883] mb-2">
               {localSettings.provider === 'ollama' && 'Ollama Setup'}
               {localSettings.provider === 'lmstudio' && 'LM Studio Setup'}
+              {localSettings.provider === 'gemini' && 'Gemini Setup'}
               {localSettings.provider === 'huggingface' && 'Hugging Face Setup'}
             </p>
             <p className="text-xs text-[#888] leading-relaxed">
@@ -171,6 +180,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
                 'Download LM Studio and load a vision model. Start the local server on port 1234.'}
               {localSettings.provider === 'huggingface' &&
                 'Create an account at huggingface.co and generate an API token with inference permissions.'}
+              {localSettings.provider === 'gemini' &&
+                'Get your API Key from Google AI Studio. Ensure you have access to Gemini 1.5 Pro.'}
             </p>
           </div>
         </div>

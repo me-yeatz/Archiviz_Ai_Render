@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   readonly VITE_HF_BASE_URL?: string;
   readonly VITE_HF_MODEL?: string;
   readonly VITE_HF_API_KEY?: string;
+  readonly VITE_GOOGLE_API_KEY?: string;
 }
 
 interface ImportMeta {

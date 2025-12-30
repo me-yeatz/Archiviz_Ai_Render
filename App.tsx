@@ -44,6 +44,8 @@ const App: React.FC = () => {
   const [aiSettings, setAiSettings] = useState<AISettings>(loadAISettings());
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
+  const [isContractChecked, setIsContractChecked] = useState(false);
+
   // Check AI health on mount
   React.useEffect(() => {
     checkAIHealth().then(setAiStatus).catch(() => {
@@ -77,7 +79,7 @@ const App: React.FC = () => {
   };
 
   const handleGenerate = async () => {
-    if (!originalImage) return;
+    if (!originalImage || !isContractChecked) return;
 
     setIsGenerating(true);
     setError(null);
@@ -201,12 +203,27 @@ const App: React.FC = () => {
             <div className="flex items-baseline justify-between mb-3">
               <span className="text-[10px] font-bold tracking-widest text-[#666] uppercase">04 / Process</span>
             </div>
+
+            {/* Freelance Guard / Contract Check */}
+            <div className="mb-4 flex items-start gap-2">
+              <input
+                type="checkbox"
+                id="contract-check"
+                checked={isContractChecked}
+                onChange={(e) => setIsContractChecked(e.target.checked)}
+                className="mt-0.5"
+              />
+              <label htmlFor="contract-check" className="text-[10px] text-[#888] leading-tight cursor-pointer select-none">
+                <span className="font-bold text-[#F6D883]">Freelance Guard:</span> I verify that I have received a deposit before generating high-fidelity renders.
+              </label>
+            </div>
+
             <button
               onClick={handleGenerate}
-              disabled={!originalImage || isGenerating}
+              disabled={!originalImage || isGenerating || !isContractChecked}
               className={`
                 w-full h-16 text-lg font-black uppercase tracking-wider flex items-center justify-between px-6 transition-all duration-300
-                ${!originalImage || isGenerating
+                ${!originalImage || isGenerating || !isContractChecked
                   ? 'bg-[#222] text-[#444] cursor-not-allowed'
                   : 'bg-[#F6D883] text-[#191919] hover:bg-[#FCD5D3]'}
               `}

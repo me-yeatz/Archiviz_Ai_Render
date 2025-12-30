@@ -30,6 +30,29 @@ npm run dev
 
 ---
 
+## 💎 Gemini API Setup (New!)
+
+**Best for Image-to-Image Rendering & Architectural Visualization**
+
+### Step 1: Get FREE Google API Key
+1. Go to https://aistudio.google.com/app/apikey (Google AI Studio)
+2. Click "Create API Key"
+3. Copy your key
+
+### Step 2: Configure
+Open `.env.local` and add:
+```bash
+VITE_GOOGLE_API_KEY=your_actual_api_key_here
+```
+
+### Step 3: Select in App
+1. Open Settings in the app
+2. Select **Gemini** provider
+3. (Optional) Paste your key in the settings if not using .env
+
+
+---
+
 ## 🏠 100% Local Options
 
 ### Option A: Ollama + Stable Diffusion WebUI
